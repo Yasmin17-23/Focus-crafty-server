@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -29,19 +29,56 @@ async function run() {
     await client.connect();
 
     const craftCollection = client.db('craftDB').collection('crafts');
-    
-    app.get('/crafts', async(req, res) => {
-       const cursor = craftCollection.find();
-       const result = await cursor.toArray();
-       res.send(result);
-    })
-    
-    app.post('/crafts', async(req, res) => {
-       const newItem = req.body;
-       const result = await craftCollection.insertOne(newItem);
-       res.send(result);
+    const usersCollection = client.db('craftDB').collection('users');
+
+
+    app.get('/crafts', async (req, res) => {
+      const cursor = craftCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
     })
 
+    app.get('/crafts/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await craftCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    })
+
+    app.post('/crafts', async (req, res) => {
+      const newItem = req.body;
+      const result = await craftCollection.insertOne(newItem);
+      res.send(result);
+    })
+
+   
+    //apis for user
+    app.get('/users', async (req, res) => {
+      const cursor = craftCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.get('/users/:email', async (req, res) => {
+      console.log(req.params.email);
+      const cursor = craftCollection.find({ email: req.params.email});
+      const result = await cursor.toArray();
+      res.send(result);
+      console.log(result);
+    })
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const result = await craftCollection.insertOne(user);
+      res.send(result);
+    })
+     app.delete('/crafts/:id', async(req, res) => {
+       const id = req.params.id;
+       const query = { _id: new ObjectId(id) };
+       const result = await craftCollection.deleteOne(query);
+       res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
@@ -52,14 +89,14 @@ async function run() {
     //await client.close();
   }
 }
+
 run().catch(console.dir);
 
 
-
 app.get('/', (req, res) => {
-    res.send('Focus Art & Craft is running')
+  res.send('Focus Art & Craft is running')
 })
 
 app.listen(port, () => {
-    console.log(`Focus Art & Craft is running on port: ${port}`);
+  console.log(`Focus Art & Craft is running on port: ${port}`);
 })
