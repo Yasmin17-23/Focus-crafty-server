@@ -119,7 +119,7 @@ async function run() {
       res.send(result);
 
     })
-    
+
     app.post('/category', async(req, res) => {
       const artItem = req.body;
       console.log(artItem);
