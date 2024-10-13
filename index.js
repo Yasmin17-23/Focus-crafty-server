@@ -112,14 +112,15 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
-
+    
+   
     app.get('/category/:subcategory', async(req, res) => {
       const cursor = categoryCollection.find({ subcategory: req.params.subcategory });
       const result = await cursor.toArray();
       res.send(result);
 
     })
-
+     
     app.post('/category', async(req, res) => {
       const artItem = req.body;
       console.log(artItem);
